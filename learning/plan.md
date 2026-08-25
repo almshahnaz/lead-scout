@@ -29,7 +29,7 @@ Each section ends in something concretely visible working. No task-level breakdo
    - [x] 1.3 Scaffold the React + Vite + TypeScript app into `frontend/`.
    - [x] 1.4 Install dependencies and start the dev server — see the default Vite+React page at localhost.
    - [x] 1.5 Hand-edit the homepage to show "Lead Scout" instead of the default Vite content.
-   - [ ] 1.6 Commit and push the scaffolded frontend to GitHub.
+   - [x] 1.6 Commit and push the scaffolded frontend to GitHub.
 
 2. **Static UI + interactivity, no backend yet**
    Build the real screens — batch input form, results table, company detail view — using fake/hardcoded data. Add styling and client-side interactivity (typing, clicking, switching views).

@@ -43,7 +43,8 @@ The living map of what I actually know. Updated after every lesson. This file �
 
 | Concept | Status | Introduced | Last reviewed | Evidence |
 |---|---|---|---|---|
-| Git commits & version history | practicing | 2026-08-23 | 2026-08-24 | Repo initialized, first commit made (task 1.1). User predicted `git status`/`git log` output beforehand; got the general shape right but missed that staging empties out after commit — corrected, then confirmed against real output. |
+| Git commits & version history | understood | 2026-08-23 | 2026-08-24 | Task 1.6: rejected Claude's proposed commit message and supplied their own ("Create React app with Vite") — shows real ownership of what a commit message should communicate, not just mechanical add/commit. |
+| .gitignore (excluding files from version control) | understood | 2026-08-24 | 2026-08-24 | Task 1.6: user correctly predicted, in their own words, that `node_modules` would not be staged "because it is in the gitignore file so git will ignore that" — confirmed against real `git status` output showing it absent. |
 | GitHub (remote repo hosting) | practicing | 2026-08-23 | 2026-08-24 | Task 1.2: repo created and pushed via `gh`. User pushed back on the private default with a real question, weighed the public-vs-private tradeoff against the project's portfolio goal, and chose public — engaged reasoning, not yet an unprompted explanation of remotes/push mechanics. |
 | Environment variables & secrets | introduced | 2026-08-23 | 2026-08-23 | Explained in core components #8 (secrets kept out of code that will be public on GitHub); not yet restated by user. |
 | Authentication & sessions | introduced | 2026-08-23 | 2026-08-23 | Explained in core components #5; not yet restated by user. |
