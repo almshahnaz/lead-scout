@@ -29,8 +29,10 @@ The living map of what I actually know. Updated after every lesson. This file �
 | Concept | Status | Introduced | Last reviewed | Evidence |
 |---|---|---|---|---|
 | Modules / imports & exports | seed | — | — | Not yet taught in-project. |
-| npm packages & dependencies | seed | — | — | Not yet taught in-project. |
-| package.json | seed | — | — | Not yet taught in-project. |
+| React components & JSX (editing existing markup) | practicing | 2026-08-24 | 2026-08-24 | Task 1.5: user hand-edited `App.tsx`'s JSX directly (h1 text, then wrote their own tagline paragraph in their editor), confirmed correct in the browser both times. |
+| npm packages & dependencies | practicing | 2026-08-24 | 2026-08-24 | Task 1.4: correctly predicted `npm install` would produce `package-lock.json` in addition to `node_modules`, and that `npm run dev` would keep running rather than return the prompt. Ran the real install, confirmed both files appeared. |
+| package.json | introduced | 2026-08-24 | 2026-08-24 | Read the real generated file with user; walked through `scripts` and `dependencies`/`devDependencies` blocks as part of task 1.3. |
+| package-lock.json (lockfiles & version pinning) | introduced | 2026-08-24 | 2026-08-24 | User predicted the file would appear but didn't know its purpose; explained it pins exact installed versions (vs. `package.json`'s loose ranges) for reproducibility, and that unlike `node_modules` it's committed to Git. |
 | HTTP requests (fetch, request/response) | seed | — | — | Not yet taught in-project. |
 | Frontend/backend separation (client-server model) | introduced | 2026-08-23 | 2026-08-23 | Explained via core components #2/#3, reinforced by the Next.js tradeoff discussion in Decision 3 — not yet restated by user. |
 | REST API endpoints (routes & HTTP requests) | introduced | 2026-08-23 | 2026-08-23 | Explained in core components #3 ("API = fixed menu of requests"); not yet restated by user. |
@@ -41,12 +43,13 @@ The living map of what I actually know. Updated after every lesson. This file �
 
 | Concept | Status | Introduced | Last reviewed | Evidence |
 |---|---|---|---|---|
-| Git commits & version history | introduced | 2026-08-23 | 2026-08-23 | Explained in core components #1; not yet restated by user or actually used (no repo initialized yet). |
-| GitHub (remote repo hosting) | introduced | 2026-08-23 | 2026-08-23 | Same as above. |
+| Git commits & version history | practicing | 2026-08-23 | 2026-08-24 | Repo initialized, first commit made (task 1.1). User predicted `git status`/`git log` output beforehand; got the general shape right but missed that staging empties out after commit — corrected, then confirmed against real output. |
+| GitHub (remote repo hosting) | practicing | 2026-08-23 | 2026-08-24 | Task 1.2: repo created and pushed via `gh`. User pushed back on the private default with a real question, weighed the public-vs-private tradeoff against the project's portfolio goal, and chose public — engaged reasoning, not yet an unprompted explanation of remotes/push mechanics. |
 | Environment variables & secrets | introduced | 2026-08-23 | 2026-08-23 | Explained in core components #8 (secrets kept out of code that will be public on GitHub); not yet restated by user. |
 | Authentication & sessions | introduced | 2026-08-23 | 2026-08-23 | Explained in core components #5; not yet restated by user. |
 | Background jobs / async processing | introduced | 2026-08-23 | 2026-08-23 | Explained in core components #7; not yet restated by user. |
 | Testing (unit tests) | seed | — | — | Named only as a build-plan deliverable (section 8); concept itself not yet explained. |
+| Hot Module Reload / React Fast Refresh | practicing | 2026-08-24 | 2026-08-24 | Task 1.5: user predicted the counter's `useState` value would reset to 0 on a live edit; corrected — Fast Refresh preserves component state across edits. Ran a real test (clicked to 3, edited the file, count stayed 3) confirming the correction. |
 | Deployment & hosting (Vercel/Railway) | understood | 2026-08-23 | 2026-08-23 | User's Decision 5 explanation, confirmed correct: "Vercel is built for deploying frontend apps... Railway provides hosting for the backend and database so you don't need separate hosting for each." |
 
 ## AI-era practice (writing a good plan, reviewing a diff, agent memory files)

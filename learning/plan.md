@@ -24,11 +24,11 @@ Each section ends in something concretely visible working. No task-level breakdo
    Initialize the Git repo, push to GitHub. Scaffold the React + Vite + TypeScript project.
    *Deliverable:* a blank Lead Scout page loads in the browser at localhost, and the code is committed and pushed to GitHub.
 
-   - [ ] 1.1 Initialize the local Git repo and make the first commit (the `learning/` docs).
-   - [ ] 1.2 Create a GitHub repo and push that first commit.
-   - [ ] 1.3 Scaffold the React + Vite + TypeScript app into `frontend/`.
-   - [ ] 1.4 Install dependencies and start the dev server — see the default Vite+React page at localhost.
-   - [ ] 1.5 Hand-edit the homepage to show "Lead Scout" instead of the default Vite content.
+   - [x] 1.1 Initialize the local Git repo and make the first commit (the `learning/` docs).
+   - [x] 1.2 Create a GitHub repo and push that first commit.
+   - [x] 1.3 Scaffold the React + Vite + TypeScript app into `frontend/`.
+   - [x] 1.4 Install dependencies and start the dev server — see the default Vite+React page at localhost.
+   - [x] 1.5 Hand-edit the homepage to show "Lead Scout" instead of the default Vite content.
    - [ ] 1.6 Commit and push the scaffolded frontend to GitHub.
 
 2. **Static UI + interactivity, no backend yet**
