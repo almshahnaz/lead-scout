@@ -16,6 +16,12 @@ Primary objective for this build: understanding, not speed. Every section below 
 
 Alternatives considered and why they lost, per decision, are in the conversation this plan came from — not duplicated here to keep this table scannable.
 
+## Git workflow
+
+**Starting Section 2:** one branch per section/task (e.g. `section-2-ui`, `fix-batch-validation`) → push → open a PR into `main` → self-review → merge.
+
+Section 1 was built by committing straight to `main` — that's fine as-is, not worth retrofitting. Full git-flow (separate long-lived `dev`/`bugfix` branch tiers) was deliberately rejected: that taxonomy exists to coordinate multiple people and staged releases, neither of which applies to a solo project deploying straight from `main`. The lightweight feature-branch + PR loop still practices the real create-branch → push → PR → merge cycle, which is the actual interview-relevant skill.
+
 ## Build sections
 
 Each section ends in something concretely visible working. No task-level breakdown yet — that comes later, per section, when it's time to build it.
