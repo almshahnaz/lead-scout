@@ -68,3 +68,8 @@ The major pieces needed to build and deploy this end to end, roughly in the orde
 
 - Auto-sending emails was explicitly rejected for MVP and v2 consideration is not a given — deliverability/spam liability. Product is a draft a human sends, not an auto-sender.
 - CRM sync was cut from MVP despite feeling "business-oriented" — CSV export proves the same integration-readiness without OAuth complexity.
+
+## Progress log
+
+- **2026-08-30 (task 2.5):** Wired `BatchInputForm`'s submit to actually populate `ResultsTable`, still against fake data. `results` state now lives in `App.tsx` (lifted so both the form and the table can reach it); submitting parses the textarea into names and matches each against `fakeResults` with a case-insensitive substring check, falling back to a "pending, no data" placeholder for unmatched names. Along the way: hit and fixed a real TypeScript string-literal-widening error on the fallback object (fixed the same way `fakeResults.ts` types its entries — an explicit `: CompanyResult` annotation).
+- **2026-08-30 (task 2.6):** Basic styling pass. Cleared the dead Vite scaffold CSS out of `App.css` and replaced it with real rules for the form (flexbox stacking), the results table (borders, `border-collapse`, row hover highlight), and a new `.company-detail` card style. User asked the agent to drive the CSS directly rather than derive each property ("CSS isn't programming") — agreed compromise: agent writes it, user pastes it in, still predicts/verifies the result rather than a blind handoff.
