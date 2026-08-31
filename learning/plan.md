@@ -47,7 +47,7 @@ Each section ends in something concretely visible working. No task-level breakdo
    - [x] 2.4 Clicking a row in the table shows a company detail view.
    - [x] 2.5 Wire the form's submit to actually populate the table from what was typed (still fake/hardcoded matching).
    - [x] 2.6 Basic styling pass so it's not bare unstyled HTML.
-   - [ ] 2.7 Commit + push using the new feature-branch → PR → merge workflow.
+   - [x] 2.7 Commit + push using the new feature-branch → PR → merge workflow.
 
 3. **A simple local backend server**
    Stand up Express on Node, running locally, no database yet. One test route (e.g. a health check) called from the frontend.
