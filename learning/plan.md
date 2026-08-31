@@ -41,6 +41,14 @@ Each section ends in something concretely visible working. No task-level breakdo
    Build the real screens — batch input form, results table, company detail view — using fake/hardcoded data. Add styling and client-side interactivity (typing, clicking, switching views).
    *Deliverable:* the whole app's UI can be clicked through end to end on fake data, so the product's shape is visible before any backend exists.
 
+   - [x] 2.1 Create a fake-data file — a few pretend companies + results — to build the UI against.
+   - [x] 2.2 Build the batch input form (textarea/input for pasting company names, no submit wiring yet).
+   - [x] 2.3 Build the results table, rendering the fake data directly (not yet connected to the form).
+   - [x] 2.4 Clicking a row in the table shows a company detail view.
+   - [x] 2.5 Wire the form's submit to actually populate the table from what was typed (still fake/hardcoded matching).
+   - [x] 2.6 Basic styling pass so it's not bare unstyled HTML.
+   - [ ] 2.7 Commit + push using the new feature-branch → PR → merge workflow.
+
 3. **A simple local backend server**
    Stand up Express on Node, running locally, no database yet. One test route (e.g. a health check) called from the frontend.
    *Deliverable:* the frontend fetches from a real local server and displays the response — first real frontend-to-backend connection.
