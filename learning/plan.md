@@ -53,6 +53,13 @@ Each section ends in something concretely visible working. No task-level breakdo
    Stand up Express on Node, running locally, no database yet. One test route (e.g. a health check) called from the frontend.
    *Deliverable:* the frontend fetches from a real local server and displays the response — first real frontend-to-backend connection.
 
+   - [x] 3.1 Scaffold a `backend/` folder: `npm init`, install TypeScript + Express, minimal `tsconfig.json`, and a script to run it.
+   - [x] 3.2 Write a minimal Express server with one health-check route (e.g. `GET /health` returning `{ status: "ok" }`).
+   - [x] 3.3 Run the server locally and confirm the health-check route responds (curl or browser).
+   - [x] 3.4 Enable CORS so the frontend (running on a different port) is allowed to call the backend.
+   - [x] 3.5 Wire the frontend to fetch `/health` on load and display the response somewhere on the page.
+   - [ ] 3.6 Commit + push via the feature-branch → PR → merge workflow.
+
 4. **Real API endpoints, still no persistence**
    Build the actual routes the frontend needs (create batch, get batch status, get results), backed by an in-memory store (a plain object/array) instead of a database yet. Wire the section 2 UI to these real endpoints instead of fake data.
    *Deliverable:* submitting a batch through the real UI hits a real API and gets a real response back — the frontend/backend contract works.
