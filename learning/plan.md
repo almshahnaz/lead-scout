@@ -58,11 +58,18 @@ Each section ends in something concretely visible working. No task-level breakdo
    - [x] 3.3 Run the server locally and confirm the health-check route responds (curl or browser).
    - [x] 3.4 Enable CORS so the frontend (running on a different port) is allowed to call the backend.
    - [x] 3.5 Wire the frontend to fetch `/health` on load and display the response somewhere on the page.
-   - [ ] 3.6 Commit + push via the feature-branch → PR → merge workflow.
+   - [x] 3.6 Commit + push via the feature-branch → PR → merge workflow.
 
 4. **Real API endpoints, still no persistence**
    Build the actual routes the frontend needs (create batch, get batch status, get results), backed by an in-memory store (a plain object/array) instead of a database yet. Wire the section 2 UI to these real endpoints instead of fake data.
    *Deliverable:* submitting a batch through the real UI hits a real API and gets a real response back — the frontend/backend contract works.
+
+   - [x] 4.1 Define the in-memory store's shape: a `BatchRun` type (id, status, results) and a plain array/object in `server.ts` to hold created runs.
+   - [ ] 4.2 Write `POST /batches`: accepts company names, creates a new run with placeholder results (no real research yet), stores it, returns it (including its `id`).
+   - [ ] 4.3 Write `GET /batches/:id`: looks up and returns one stored run by id.
+   - [ ] 4.4 Test both routes manually (curl or browser) with fake input before touching the frontend.
+   - [ ] 4.5 Wire the frontend: `handleSubmit` now `POST`s to `/batches` instead of matching against `fakeResults` locally, then fetches the created run via `GET` to populate the results table.
+   - [ ] 4.6 Commit + push via the feature-branch → PR → merge workflow.
 
 5. **Database + persistence**
    Set up Postgres locally, design the schema (users, companies, batch_runs, drafts), connect Express to it, swap the in-memory store from section 4 for real reads/writes.
