@@ -65,10 +65,10 @@ Each section ends in something concretely visible working. No task-level breakdo
    *Deliverable:* submitting a batch through the real UI hits a real API and gets a real response back — the frontend/backend contract works.
 
    - [x] 4.1 Define the in-memory store's shape: a `BatchRun` type (id, status, results) and a plain array/object in `server.ts` to hold created runs.
-   - [ ] 4.2 Write `POST /batches`: accepts company names, creates a new run with placeholder results (no real research yet), stores it, returns it (including its `id`).
-   - [ ] 4.3 Write `GET /batches/:id`: looks up and returns one stored run by id.
-   - [ ] 4.4 Test both routes manually (curl or browser) with fake input before touching the frontend.
-   - [ ] 4.5 Wire the frontend: `handleSubmit` now `POST`s to `/batches` instead of matching against `fakeResults` locally, then fetches the created run via `GET` to populate the results table.
+   - [x] 4.2 Write `POST /batches`: accepts company names, creates a new run with placeholder results (no real research yet), stores it, returns it (including its `id`).
+   - [x] 4.3 Write `GET /batches/:id`: looks up and returns one stored run by id.
+   - [x] 4.4 Test both routes manually (curl or browser) with fake input before touching the frontend.
+   - [x] 4.5 Wire the frontend: `handleSubmit` now `POST`s to `/batches` instead of matching against `fakeResults` locally, then fetches the created run via `GET` to populate the results table.
    - [ ] 4.6 Commit + push via the feature-branch → PR → merge workflow.
 
 5. **Database + persistence**

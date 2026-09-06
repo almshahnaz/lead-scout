@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import "./App.css";
 import BatchInputForm from "./components/BatchInputForm";
 import ResultsTable from "./components/ResultsTable";
-import { fakeResults, type CompanyResult } from "./data/fakeResults";
+import { type CompanyResult } from "./data/fakeResults";
 import CompanyDetail from "./components/CompanyDetail";
 
 function App() {
@@ -23,28 +23,37 @@ function App() {
     checkHealth();
   }, []);
 
-  function handleSubmit(companyText: string) {
+  async function handleSubmit(companyText: string) {
+    const url = "http://localhost:3001/batches";
     const companyNames = companyText
       .split("\n")
       .map((name) => name.trim())
       .filter((name) => name !== "");
 
-    const validCompanies = companyNames.map((name) => {
-      const match = fakeResults.find((result) =>
-        result.companyName.toLowerCase().includes(name.toLowerCase()),
-      );
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ companyNames }),
+      });
 
-      const companyNotFound: CompanyResult = {
-        id: name,
-        companyName: name,
-        status: "pending",
-        brief: "No data for this company",
-        emailDraft: "",
-      };
-      return match ? match : companyNotFound;
-    });
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const result = await response.json();
 
-    setResults(validCompanies);
+      const fetchBatch = await fetch(url + `/${result.id}`);
+
+      if (!fetchBatch.ok) {
+        throw new Error(`HTTP error! Status: ${fetchBatch.status}`);
+      }
+
+      const batchData = await fetchBatch.json();
+
+      setResults(batchData.results);
+    } catch (error) {
+      console.error("Error", error);
+    }
   }
 
   return (
