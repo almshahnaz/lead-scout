@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "./App.css";
 import BatchInputForm from "./components/BatchInputForm";
 import ResultsTable from "./components/ResultsTable";
@@ -11,17 +11,6 @@ function App() {
   );
 
   const [results, setResults] = useState<CompanyResult[]>([]);
-
-  const [health, setHealth] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function checkHealth() {
-      const response = await fetch("http://localhost:3001/health");
-      const data = await response.json();
-      setHealth(data.status);
-    }
-    checkHealth();
-  }, []);
 
   async function handleSubmit(companyText: string) {
     const url = "http://localhost:3001/batches";
@@ -66,7 +55,6 @@ function App() {
         results={results}
       />
       {selectedResult && <CompanyDetail result={selectedResult} />}
-      {health && <p>{health}</p>}
     </>
   );
 }

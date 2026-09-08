@@ -69,11 +69,20 @@ Each section ends in something concretely visible working. No task-level breakdo
    - [x] 4.3 Write `GET /batches/:id`: looks up and returns one stored run by id.
    - [x] 4.4 Test both routes manually (curl or browser) with fake input before touching the frontend.
    - [x] 4.5 Wire the frontend: `handleSubmit` now `POST`s to `/batches` instead of matching against `fakeResults` locally, then fetches the created run via `GET` to populate the results table.
-   - [ ] 4.6 Commit + push via the feature-branch → PR → merge workflow.
+   - [x] 4.6 Commit + push via the feature-branch → PR → merge workflow.
 
 5. **Database + persistence**
    Set up Postgres locally, design the schema (users, companies, batch_runs, drafts), connect Express to it, swap the in-memory store from section 4 for real reads/writes.
    *Deliverable:* submit a batch, close the tab, reopen it — the data is still there.
+
+   - [x] 5.1 Install Postgres locally (Homebrew), start the server, create a database for this project. Confirm by connecting with `psql`.
+   - [x] 5.2 Design and create the schema: a `batch_runs` table and a `company_results` table (foreign key back to its batch run), matching the shape already in `server.ts`'s `BatchRun`/`CompanyResult` interfaces. `users`/`companies`/`drafts` tables are deferred to Section 6 (auth) since nothing needs them yet.
+   - [x] 5.3 Connect Express to Postgres: install a driver package, write a small db-connection module, confirm it can actually reach the database (e.g. a test query on startup).
+   - [x] 5.4 Swap `POST /batches` to `INSERT` into Postgres instead of pushing onto the in-memory array.
+   - [x] 5.5 Swap `GET /batches/:id` to `SELECT` from Postgres instead of `.find()`-ing the in-memory array.
+   - [x] 5.6 Wrap `POST /batches`' inserts in a database transaction (`BEGIN`/`COMMIT`/`ROLLBACK` via a dedicated `pool.connect()` client, not the shared `pool`) so a failure partway through a batch leaves nothing behind. Verified by forcing a mid-batch `NOT NULL` violation and confirming `batch_runs`/`company_results` row counts were unchanged before/after — including the row that had already inserted successfully before the failure.
+   - [x] 5.7 Manually retest both routes (Postman), restarting the server in between, to prove the data survives a restart — the section's real deliverable.
+   - [ ] 5.8 Commit + push via the feature-branch → PR → merge workflow.
 
 6. **Authentication**
    Signup/login/session handling; scope data per logged-in user.
