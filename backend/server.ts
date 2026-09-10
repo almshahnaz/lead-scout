@@ -2,7 +2,8 @@ import express from "express";
 import cors from "cors";
 import { randomUUID, type UUID } from "crypto";
 import { pool } from "./db/pool.js";
-import type { PoolClient } from "pg";
+import type { PoolClient, QueryResult } from "pg";
+import bcrypt from "bcrypt";
 
 const app = express();
 app.use(cors());
@@ -23,17 +24,35 @@ interface BatchRun {
   results: CompanyResult[];
 }
 
-async function checkConnection() {
-  try {
-    const result = await pool.query("SELECT NOW()");
+app.post("/signup", async (req, res) => {
+  const { email, password } = req.body;
 
-    console.log(result);
-  } catch (error) {
-    console.error("Error: ", error);
+  if (!email || !password) {
+    return res.status(400).json({ error: "Email and password are required" });
   }
-}
 
-checkConnection();
+  try {
+    const userResult = await findUser(email);
+
+    if (userResult) {
+      return res.status(409).json({ error: "User already exists" });
+    }
+
+    const passwordHash = await hashPassword(password);
+
+    const newUser = await createUser(email, passwordHash);
+
+    const userClient = {
+      id: newUser.rows[0].id,
+      email: newUser.rows[0].email,
+    };
+
+    res.status(201).json(userClient);
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 app.post("/batches", async (req, res) => {
   const { companyNames } = req.body;
@@ -94,12 +113,43 @@ app.get("/batches/:id", async (req, res) => {
       results: companyResults,
     };
 
-    res.json(batch);
+    res.status(200).json(batch);
   } catch (error) {
     console.error("Error: ", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+async function createUser(email: string, passwordHash: string) {
+  const id = randomUUID();
+  const newUser = {
+    id: id,
+    email: email,
+    password_hash: passwordHash,
+  };
+
+  const query =
+    "INSERT INTO users (id, email, password_hash) VALUES ($1, $2, $3) RETURNING id, email";
+
+  return await pool.query(query, [
+    newUser.id,
+    newUser.email,
+    newUser.password_hash,
+  ]);
+}
+
+async function hashPassword(userPassword: string) {
+  const saltRounds = 10;
+  const hash = await bcrypt.hash(userPassword, saltRounds);
+  return hash;
+}
+
+async function findUser(email: string): Promise<boolean> {
+  const query = "SELECT * FROM users WHERE email = $1";
+
+  const result = await pool.query(query, [email]);
+  return result.rows.length > 0;
+}
 
 async function createCompanyResult(
   result: CompanyResult,
@@ -149,6 +199,18 @@ async function getBatchByID(id: string) {
   const result = await pool.query(query, [id]);
   return result.rows[0];
 }
+
+async function checkConnection() {
+  try {
+    const result = await pool.query("SELECT NOW()");
+
+    console.log(result);
+  } catch (error) {
+    console.error("Error: ", error);
+  }
+}
+
+checkConnection();
 
 app.listen(PORT, () => {
   console.log(`Server started on port: ${PORT}`);
