@@ -11,3 +11,10 @@ CREATE TABLE IF NOT EXISTS company_results(
     brief text,
     email_draft text
 );
+
+CREATE TABLE IF NOT EXISTS users(
+    id uuid PRIMARY KEY,
+    email text UNIQUE NOT NULL,
+    password_hash text NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);

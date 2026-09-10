@@ -82,11 +82,19 @@ Each section ends in something concretely visible working. No task-level breakdo
    - [x] 5.5 Swap `GET /batches/:id` to `SELECT` from Postgres instead of `.find()`-ing the in-memory array.
    - [x] 5.6 Wrap `POST /batches`' inserts in a database transaction (`BEGIN`/`COMMIT`/`ROLLBACK` via a dedicated `pool.connect()` client, not the shared `pool`) so a failure partway through a batch leaves nothing behind. Verified by forcing a mid-batch `NOT NULL` violation and confirming `batch_runs`/`company_results` row counts were unchanged before/after — including the row that had already inserted successfully before the failure.
    - [x] 5.7 Manually retest both routes (Postman), restarting the server in between, to prove the data survives a restart — the section's real deliverable.
-   - [ ] 5.8 Commit + push via the feature-branch → PR → merge workflow.
+   - [x] 5.8 Commit + push via the feature-branch → PR → merge workflow.
 
 6. **Authentication**
    Signup/login/session handling; scope data per logged-in user.
    *Deliverable:* create an account, log out, log back in, see only your own batches.
+
+   - [x] 6.1 Design and create a `users` table (`id`, `email` unique, `password_hash`, `created_at`) in `schema.sql`.
+   - [x] 6.2 Write `POST /signup`: hash the incoming password (never store it plain), insert the user, return the created user without the hash.
+   - [ ] 6.3 Write `POST /login`: verify the submitted password against the stored hash, then establish a session so the browser holds proof of being logged in.
+   - [ ] 6.4 Add auth middleware that checks that session on protected routes and rejects with `401` when it's missing; apply it to the `/batches` routes.
+   - [ ] 6.5 Scope data per user: add `user_id` to `batch_runs`, set it from the logged-in session on create, and filter `GET` results to the logged-in user's own batches.
+   - [ ] 6.6 Wire the frontend: signup/login forms and a logout action; confirm logging in shows only that user's batches, and a second account sees none of them.
+   - [ ] 6.7 Commit + push via the feature-branch → PR → merge workflow.
 
 7. **The core AI pipeline (RAG) + background processing**
    Search/fetch real company info, chunk it, embed it into pgvector, retrieve the relevant pieces, generate the brief + email draft via an LLM. Run this as a background job so submitting a batch doesn't block the page.
