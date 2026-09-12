@@ -2,13 +2,32 @@ import express from "express";
 import cors from "cors";
 import { randomUUID, type UUID } from "crypto";
 import { pool } from "./db/pool.js";
-import type { PoolClient, QueryResult } from "pg";
+import type { PoolClient } from "pg";
 import bcrypt from "bcrypt";
+import session from "express-session";
+
+declare module "express-session" {
+  interface SessionData {
+    userID: string;
+  }
+}
 
 const app = express();
+const PORT = 3001;
+const sessionSecret = process.env.SESSION_SECRET;
+if (!sessionSecret) {
+  throw new Error("SESSION_SECRET is not set in .env");
+}
+
 app.use(cors());
 app.use(express.json());
-const PORT = 3001;
+app.use(
+  session({
+    secret: sessionSecret,
+    resave: false,
+    saveUninitialized: false,
+  }),
+);
 
 interface CompanyResult {
   id: string;
@@ -42,12 +61,36 @@ app.post("/signup", async (req, res) => {
 
     const newUser = await createUser(email, passwordHash);
 
-    const userClient = {
+    res.status(201).json({
       id: newUser.rows[0].id,
       email: newUser.rows[0].email,
-    };
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
-    res.status(201).json(userClient);
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: "Email and password are required" });
+  }
+
+  try {
+    const user = await findUser(email);
+
+    if (!user) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    if (!(await checkPassword(password, user.password_hash))) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    req.session.userID = user.id;
+    res.status(200).json({ id: user.id, email: user.email });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -120,6 +163,13 @@ app.get("/batches/:id", async (req, res) => {
   }
 });
 
+async function checkPassword(
+  plainPassword: string,
+  hash: string,
+): Promise<boolean> {
+  return await bcrypt.compare(plainPassword, hash);
+}
+
 async function createUser(email: string, passwordHash: string) {
   const id = randomUUID();
   const newUser = {
@@ -144,11 +194,11 @@ async function hashPassword(userPassword: string) {
   return hash;
 }
 
-async function findUser(email: string): Promise<boolean> {
+async function findUser(email: string) {
   const query = "SELECT * FROM users WHERE email = $1";
 
   const result = await pool.query(query, [email]);
-  return result.rows.length > 0;
+  return result.rows[0];
 }
 
 async function createCompanyResult(
