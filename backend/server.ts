@@ -1,4 +1,8 @@
-import express from "express";
+import express, {
+  type Request,
+  type Response,
+  type NextFunction,
+} from "express";
 import cors from "cors";
 import { randomUUID, type UUID } from "crypto";
 import { pool } from "./db/pool.js";
@@ -97,7 +101,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.post("/batches", async (req, res) => {
+app.post("/batches", requireAuth, async (req, res) => {
   const { companyNames } = req.body;
   const batchID = randomUUID();
   const initialStatus = "pending";
@@ -137,31 +141,42 @@ app.post("/batches", async (req, res) => {
   }
 });
 
-app.get("/batches/:id", async (req, res) => {
-  const { id } = req.params;
+app.get(
+  "/batches/:id",
+  requireAuth,
+  async (req: Request<{ id: string }>, res: Response) => {
+    const { id } = req.params;
 
-  try {
-    const batchRow = await getBatchByID(id);
+    try {
+      const batchRow = await getBatchByID(id);
 
-    if (!batchRow) {
-      res.status(404).json({ error: "not found" });
-      return;
+      if (!batchRow) {
+        res.status(404).json({ error: "not found" });
+        return;
+      }
+
+      const companyResults: CompanyResult[] = await getCompanyResults(id);
+
+      const batch: BatchRun = {
+        id: id,
+        status: batchRow.status,
+        results: companyResults,
+      };
+
+      res.status(200).json(batch);
+    } catch (error) {
+      console.error("Error: ", error);
+      res.status(500).json({ error: "Internal server error" });
     }
+  },
+);
 
-    const companyResults: CompanyResult[] = await getCompanyResults(id);
-
-    const batch: BatchRun = {
-      id: id,
-      status: batchRow.status,
-      results: companyResults,
-    };
-
-    res.status(200).json(batch);
-  } catch (error) {
-    console.error("Error: ", error);
-    res.status(500).json({ error: "Internal server error" });
+function requireAuth(req: Request, res: Response, next: NextFunction) {
+  if (!req.session.userID) {
+    return res.status(401).json({ error: "You must be logged in" });
   }
-});
+  next();
+}
 
 async function checkPassword(
   plainPassword: string,
