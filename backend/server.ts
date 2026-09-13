@@ -103,6 +103,13 @@ app.post("/login", async (req, res) => {
 
 app.post("/batches", requireAuth, async (req, res) => {
   const { companyNames } = req.body;
+  const cleanedNames = companyNames
+    .filter((name: string) => name.trim() !== "")
+    .map((name: string) => name.trim());
+
+  if (cleanedNames.length === 0) {
+    return res.status(400).json({ error: "Please add at least 1 company" });
+  }
   const batchID = randomUUID();
   const initialStatus = "pending";
 
@@ -111,10 +118,16 @@ app.post("/batches", requireAuth, async (req, res) => {
   try {
     await client.query("BEGIN");
 
-    await createBatch(batchID, initialStatus, client);
+    const userID = req.session.userID;
+
+    if (!userID) {
+      return res.status(401).json({ error: "You must be logged in" });
+    }
+
+    await createBatch(userID, batchID, initialStatus, client);
 
     const results: CompanyResult[] = [];
-    for (const name of companyNames) {
+    for (const name of cleanedNames) {
       const result: CompanyResult = {
         id: randomUUID(),
         companyName: name,
@@ -148,7 +161,13 @@ app.get(
     const { id } = req.params;
 
     try {
-      const batchRow = await getBatchByID(id);
+      const userID = req.session.userID;
+
+      if (!userID) {
+        return res.status(401).json({ error: "You must be logged in" });
+      }
+
+      const batchRow = await getBatchByID(userID, id);
 
       if (!batchRow) {
         res.status(404).json({ error: "not found" });
@@ -235,13 +254,15 @@ async function createCompanyResult(
 }
 
 async function createBatch(
+  userID: string,
   batchID: string,
   initialStatus: string,
   client: PoolClient,
 ) {
-  const query = "INSERT INTO batch_runs (id, status) VALUES ($1, $2)";
+  const query =
+    "INSERT INTO batch_runs (id, status, user_id) VALUES ($1, $2, $3)";
 
-  await client.query(query, [batchID, initialStatus]);
+  await client.query(query, [batchID, initialStatus, userID]);
 }
 
 async function getCompanyResults(batchID: string): Promise<CompanyResult[]> {
@@ -258,10 +279,10 @@ async function getCompanyResults(batchID: string): Promise<CompanyResult[]> {
   }));
 }
 
-async function getBatchByID(id: string) {
-  const query = "SELECT * FROM batch_runs WHERE id = $1";
+async function getBatchByID(userID: string, id: string) {
+  const query = "SELECT * FROM batch_runs WHERE id = $1 AND user_id = $2";
 
-  const result = await pool.query(query, [id]);
+  const result = await pool.query(query, [id, userID]);
   return result.rows[0];
 }
 

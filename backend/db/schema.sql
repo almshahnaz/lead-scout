@@ -1,6 +1,14 @@
+CREATE TABLE IF NOT EXISTS users(
+    id uuid PRIMARY KEY,
+    email text UNIQUE NOT NULL,
+    password_hash text NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS batch_runs(
     id uuid PRIMARY KEY,
-    status text CHECK (status IN('pending', 'done')) NOT NULL
+    status text CHECK (status IN('pending', 'done')) NOT NULL,
+    user_id uuid REFERENCES users(id)
 );
 
 CREATE TABLE IF NOT EXISTS company_results(
@@ -12,9 +20,3 @@ CREATE TABLE IF NOT EXISTS company_results(
     email_draft text
 );
 
-CREATE TABLE IF NOT EXISTS users(
-    id uuid PRIMARY KEY,
-    email text UNIQUE NOT NULL,
-    password_hash text NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
