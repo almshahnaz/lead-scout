@@ -23,7 +23,7 @@ if (!sessionSecret) {
   throw new Error("SESSION_SECRET is not set in .env");
 }
 
-app.use(cors());
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(express.json());
 app.use(
   session({
@@ -70,8 +70,10 @@ app.post("/signup", async (req, res) => {
       email: newUser.rows[0].email,
     });
   } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error("Signup error:", error);
+    res.status(500).json({
+      error: "Failed to sign up",
+    });
   }
 });
 
@@ -97,8 +99,21 @@ app.post("/login", async (req, res) => {
     res.status(200).json({ id: user.id, email: user.email });
   } catch (error) {
     console.error("Error:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({
+      error: "Failed to log in",
+    });
   }
+});
+
+app.post("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ error: "Failed to log out" });
+    }
+
+    res.clearCookie("connect.sid");
+    return res.status(200).json({ message: "Logged out successfully" });
+  });
 });
 
 app.post("/batches", requireAuth, async (req, res) => {
@@ -108,7 +123,9 @@ app.post("/batches", requireAuth, async (req, res) => {
     .map((name: string) => name.trim());
 
   if (cleanedNames.length === 0) {
-    return res.status(400).json({ error: "Please add at least 1 company" });
+    return res
+      .status(400)
+      .json({ error: "Please provide at least one company name" });
   }
   const batchID = randomUUID();
   const initialStatus = "pending";
@@ -148,7 +165,9 @@ app.post("/batches", requireAuth, async (req, res) => {
   } catch (error) {
     await client.query("ROLLBACK");
     console.error("Error:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({
+      error: "Failed to create batch",
+    });
   } finally {
     client.release();
   }
@@ -185,7 +204,9 @@ app.get(
       res.status(200).json(batch);
     } catch (error) {
       console.error("Error: ", error);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({
+        error: "Failed to retrieve batch",
+      });
     }
   },
 );
