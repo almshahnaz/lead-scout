@@ -90,10 +90,10 @@ Each section ends in something concretely visible working. No task-level breakdo
 
    - [x] 6.1 Design and create a `users` table (`id`, `email` unique, `password_hash`, `created_at`) in `schema.sql`.
    - [x] 6.2 Write `POST /signup`: hash the incoming password (never store it plain), insert the user, return the created user without the hash.
-   - [ ] 6.3 Write `POST /login`: verify the submitted password against the stored hash, then establish a session so the browser holds proof of being logged in.
-   - [ ] 6.4 Add auth middleware that checks that session on protected routes and rejects with `401` when it's missing; apply it to the `/batches` routes.
-   - [ ] 6.5 Scope data per user: add `user_id` to `batch_runs`, set it from the logged-in session on create, and filter `GET` results to the logged-in user's own batches.
-   - [ ] 6.6 Wire the frontend: signup/login forms and a logout action; confirm logging in shows only that user's batches, and a second account sees none of them.
+   - [x] 6.3 Write `POST /login`: verify the submitted password against the stored hash, then establish a session so the browser holds proof of being logged in.
+   - [x] 6.4 Add auth middleware that checks that session on protected routes and rejects with `401` when it's missing; apply it to the `/batches` routes.
+   - [x] 6.5 Scope data per user: add `user_id` to `batch_runs`, set it from the logged-in session on create, and filter `GET` results to the logged-in user's own batches.
+   - [x] 6.6 Wire the frontend: signup/login forms and a logout action; confirm logging in shows only that user's batches, and a second account sees none of them.
    - [ ] 6.7 Commit + push via the feature-branch → PR → merge workflow.
 
 7. **The core AI pipeline (RAG) + background processing**
