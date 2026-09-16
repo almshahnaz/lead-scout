@@ -6,6 +6,8 @@ import { type CompanyResult } from "./data/fakeResults";
 import CompanyDetail from "./components/CompanyDetail";
 import LoginForm from "./components/LoginForm";
 import SignupForm from "./components/SignupForm";
+import * as authApi from "./api/auth";
+import * as batchesApi from "./api/batches";
 
 function App() {
   const [selectedResult, setSelectedResult] = useState<CompanyResult | null>(
@@ -26,107 +28,57 @@ function App() {
   async function handleSignup(email: string, password: string) {
     setError(null);
 
-    const url = "http://localhost:3001/signup";
-
     try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        const { error } = await response.json();
-        setError(error);
-        return;
-      }
-
+      await authApi.signup(email, password);
       handleLogin(email, password);
     } catch (error) {
-      console.error("Error:", error);
-      setError("Unable to reach the server. Please try again.");
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again.",
+      );
     }
   }
 
   async function handleLogin(email: string, password: string) {
     setError(null);
 
-    const url = "http://localhost:3001/login";
-
     try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        const { error } = await response.json();
-        setError(error);
-        return;
-      }
-
-      const result = await response.json();
+      const result = await authApi.login(email, password);
 
       setLoggedIn(result);
       setResults([]);
       setSelectedResult(null);
     } catch (error) {
-      console.error("Error:", error);
-      setError("Unable to reach the server. Please try again.");
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again.",
+      );
     }
   }
 
   async function handleLogout() {
-    const url = "http://localhost:3001/logout";
-
     try {
-      const response = await fetch(url, {
-        method: "POST",
-        credentials: "include",
-      });
+      await authApi.logout();
 
-      if (response.ok) {
-        setLoggedIn(null);
-        setResults([]);
-        setSelectedResult(null);
-      }
+      setLoggedIn(null);
+      setResults([]);
+      setSelectedResult(null);
     } catch (error) {
       console.error("Error:", error);
     }
   }
 
   async function handleSubmit(companyText: string) {
-    const url = "http://localhost:3001/batches";
     const companyNames = companyText
       .split("\n")
       .map((name) => name.trim())
       .filter((name) => name !== "");
 
     try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ companyNames }),
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const result = await response.json();
-
-      const fetchBatch = await fetch(url + `/${result.id}`, {
-        credentials: "include",
-      });
-
-      if (!fetchBatch.ok) {
-        throw new Error(`HTTP error! Status: ${fetchBatch.status}`);
-      }
-
-      const batchData = await fetchBatch.json();
+      const batch = await batchesApi.createBatch(companyNames);
+      const batchData = await batchesApi.getBatch(batch.id);
 
       setResults(batchData.results);
     } catch (error) {
