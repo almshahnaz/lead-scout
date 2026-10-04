@@ -13,6 +13,9 @@ Primary objective for this build: understanding, not speed. Every section below 
 | Backend framework | Express | Most widely used Node framework; deliberately minimal/unopinionated, so building routes and request handling by hand teaches the real mechanics instead of hiding them behind framework magic. |
 | Database | PostgreSQL + pgvector | Data is inherently relational (companies → runs → drafts, users → companies); Postgres is the most common production DB with the deepest docs; pgvector stores the RAG embeddings too, avoiding a second database. |
 | Hosting | Vercel (frontend) + Railway (backend + database) | Vercel is purpose-built for deploying frontend apps straight from GitHub; Railway hosts backend and DB on one platform, so there's one dashboard and one place to manage secrets instead of two hosts' worth of quirks. |
+| Company research (search + fetch) | Tavily | Purpose-built for feeding LLM/RAG pipelines — returns already-extracted clean page text instead of raw HTML, so this section can focus on chunking/embedding/retrieval/generation rather than HTML parsing. |
+| Embeddings | OpenAI `text-embedding-3-small` | The default in almost every RAG tutorial — cheap, extremely well documented; Anthropic has no first-party embeddings endpoint, so this is a second provider either way. |
+| Generation (LLM) | Claude Sonnet 5 (`claude-sonnet-5`) | Strong at natural writing tasks like a research brief/email draft; the cost-conscious middle tier ($2 in / $10 out per 1M tokens) rather than the most expensive model, matching this project's stated cost-guardrail concern. |
 
 Alternatives considered and why they lost, per decision, are in the conversation this plan came from — not duplicated here to keep this table scannable.
 
@@ -94,11 +97,19 @@ Each section ends in something concretely visible working. No task-level breakdo
    - [x] 6.4 Add auth middleware that checks that session on protected routes and rejects with `401` when it's missing; apply it to the `/batches` routes.
    - [x] 6.5 Scope data per user: add `user_id` to `batch_runs`, set it from the logged-in session on create, and filter `GET` results to the logged-in user's own batches.
    - [x] 6.6 Wire the frontend: signup/login forms and a logout action; confirm logging in shows only that user's batches, and a second account sees none of them.
-   - [ ] 6.7 Commit + push via the feature-branch → PR → merge workflow.
+   - [x] 6.7 Commit + push via the feature-branch → PR → merge workflow.
 
 7. **The core AI pipeline (RAG) + background processing**
    Search/fetch real company info, chunk it, embed it into pgvector, retrieve the relevant pieces, generate the brief + email draft via an LLM. Run this as a background job so submitting a batch doesn't block the page.
    *Deliverable:* submit a real batch of real companies and get back real, grounded research briefs and email drafts, without the UI freezing.
+
+   - [x] 7.1 Lock the remaining stack decisions this section needs: which search/fetch approach finds real company info, which embeddings provider, which LLM provider for generation. Add them to the locked-decisions table with a short "why."
+   - [x] 7.2 Write a function that takes one company name and returns real fetched text about it (search + a plain HTTP fetch of a page, no headless browser). Test it manually against a couple of real companies.
+   - [x] 7.3 Chunk that raw text into smaller overlapping pieces sized for embedding. Confirm on real output that the chunk count/shape looks sane for a real company's fetched text.
+   - [x] 7.4 Add a pgvector-backed table for chunk embeddings, generate embeddings for a company's chunks via the chosen provider, and store them. Confirm real vectors landed via `psql`.
+   - [ ] 7.5 Implement retrieval: given a company, embed a query and pull back the top-k most relevant stored chunks via similarity search. Confirm manually that the retrieved chunks are actually the relevant ones, not the whole page.
+   - [ ] 7.6 Implement generation: send the retrieved chunks to the LLM to produce a research brief + email draft, and save them into `company_results`. Run it end to end for one real company and read the real output.
+   - [ ] 7.7 Wire the whole pipeline into `POST /batches` as background processing (the HTTP response returns immediately; each company's status flips `pending` → `done` as its research finishes), then commit + push via the feature-branch → PR → merge workflow.
 
 8. **Tests**
    Write tests for the pieces that matter most: API endpoints, the retrieval logic, auth.

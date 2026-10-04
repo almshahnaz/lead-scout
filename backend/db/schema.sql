@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS vector;
+
 CREATE TABLE IF NOT EXISTS users(
     id uuid PRIMARY KEY,
     email text UNIQUE NOT NULL,
@@ -18,5 +20,12 @@ CREATE TABLE IF NOT EXISTS company_results(
     status text CHECK (status IN ('done', 'pending', 'failed')) NOT NULL,
     brief text,
     email_draft text
+);
+
+CREATE TABLE IF NOT EXISTS company_embeddings(
+    id uuid PRIMARY KEY,
+    company_result_id uuid REFERENCES company_results(id),
+    chunk text NOT NULL,
+    embedding vector(1536)
 );
 
