@@ -15,7 +15,7 @@ Primary objective for this build: understanding, not speed. Every section below 
 | Hosting | Vercel (frontend) + Railway (backend + database) | Vercel is purpose-built for deploying frontend apps straight from GitHub; Railway hosts backend and DB on one platform, so there's one dashboard and one place to manage secrets instead of two hosts' worth of quirks. |
 | Company research (search + fetch) | Tavily | Purpose-built for feeding LLM/RAG pipelines — returns already-extracted clean page text instead of raw HTML, so this section can focus on chunking/embedding/retrieval/generation rather than HTML parsing. |
 | Embeddings | OpenAI `text-embedding-3-small` | The default in almost every RAG tutorial — cheap, extremely well documented; Anthropic has no first-party embeddings endpoint, so this is a second provider either way. |
-| Generation (LLM) | Claude Sonnet 5 (`claude-sonnet-5`) | Strong at natural writing tasks like a research brief/email draft; the cost-conscious middle tier ($2 in / $10 out per 1M tokens) rather than the most expensive model, matching this project's stated cost-guardrail concern. |
+| Generation (LLM) | OpenAI `gpt-4o-mini` | Changed from the original Claude Sonnet 5 pick (task 7.6) to avoid standing up a second LLM provider account/billing setup for a learning project — a deliberate "boring choice" tradeoff, giving up a small writing-quality edge in exchange for one less account to manage. `gpt-4o-mini` over full `gpt-4o`: drafting a brief/email isn't a hard reasoning task, and the smaller model is far cheaper, matching the project's stated cost-guardrail concern. |
 
 Alternatives considered and why they lost, per decision, are in the conversation this plan came from — not duplicated here to keep this table scannable.
 
@@ -108,7 +108,7 @@ Each section ends in something concretely visible working. No task-level breakdo
    - [x] 7.3 Chunk that raw text into smaller overlapping pieces sized for embedding. Confirm on real output that the chunk count/shape looks sane for a real company's fetched text.
    - [x] 7.4 Add a pgvector-backed table for chunk embeddings, generate embeddings for a company's chunks via the chosen provider, and store them. Confirm real vectors landed via `psql`.
    - [x] 7.5 Implement retrieval: given a company, embed a query and pull back the top-k most relevant stored chunks via similarity search. Confirm manually that the retrieved chunks are actually the relevant ones, not the whole page.
-   - [ ] 7.6 Implement generation: send the retrieved chunks to the LLM to produce a research brief + email draft, and save them into `company_results`. Run it end to end for one real company and read the real output.
+   - [x] 7.6 Implement generation: send the retrieved chunks to the LLM to produce a research brief + email draft, and save them into `company_results`. Run it end to end for one real company and read the real output.
    - [ ] 7.7 Wire the whole pipeline into `POST /batches` as background processing (the HTTP response returns immediately; each company's status flips `pending` → `done` as its research finishes), then commit + push via the feature-branch → PR → merge workflow.
 
 8. **Tests**

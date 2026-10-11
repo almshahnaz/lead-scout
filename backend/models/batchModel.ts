@@ -45,7 +45,21 @@ export async function createCompanyResult(
   ]);
 }
 
-export async function getCompanyResults(batchID: string): Promise<CompanyResult[]> {
+export async function updateCompanyResult(
+  id: string,
+  brief: string,
+  emailDraft: string,
+  status: "done" | "pending" | "failed",
+) {
+  const query =
+    "UPDATE company_results SET brief = $1, email_draft = $2, status = $3 WHERE id = $4";
+
+  await pool.query(query, [brief, emailDraft, status, id]);
+}
+
+export async function getCompanyResults(
+  batchID: string,
+): Promise<CompanyResult[]> {
   const query = "SELECT * FROM company_results WHERE batch_run_id = $1";
 
   const result = await pool.query(query, [batchID]);
