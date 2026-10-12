@@ -57,6 +57,18 @@ export async function updateCompanyResult(
   await pool.query(query, [brief, emailDraft, status, id]);
 }
 
+export async function markCompanyResultFailed(id: string): Promise<void> {
+  const query = "UPDATE company_results SET status = 'failed' WHERE id = $1";
+
+  await pool.query(query, [id]);
+}
+
+export async function markBatchDone(batchID: string): Promise<void> {
+  const query = "UPDATE batch_runs SET status = 'done' WHERE id = $1";
+
+  await pool.query(query, [batchID]);
+}
+
 export async function getCompanyResults(
   batchID: string,
 ): Promise<CompanyResult[]> {

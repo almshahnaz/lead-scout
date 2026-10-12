@@ -8,7 +8,9 @@ import {
   getBatchByID,
   type CompanyResult,
   type BatchRun,
+  markBatchDone,
 } from "../models/batchModel.js";
+import { processCompanyResearch } from "../services/pipeline.js";
 
 export async function createBatchHandler(req: Request, res: Response) {
   const { companyNames } = req.body;
@@ -53,6 +55,14 @@ export async function createBatchHandler(req: Request, res: Response) {
     }
 
     await client.query("COMMIT");
+
+    Promise.allSettled(
+      results.map((result) =>
+        processCompanyResearch(result.id, result.companyName),
+      ),
+    )
+      .then(() => markBatchDone(batchID))
+      .catch(console.error);
 
     const batch: BatchRun = { id: batchID, status: initialStatus, results };
     res.status(201).json(batch);

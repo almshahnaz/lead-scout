@@ -109,7 +109,7 @@ Each section ends in something concretely visible working. No task-level breakdo
    - [x] 7.4 Add a pgvector-backed table for chunk embeddings, generate embeddings for a company's chunks via the chosen provider, and store them. Confirm real vectors landed via `psql`.
    - [x] 7.5 Implement retrieval: given a company, embed a query and pull back the top-k most relevant stored chunks via similarity search. Confirm manually that the retrieved chunks are actually the relevant ones, not the whole page.
    - [x] 7.6 Implement generation: send the retrieved chunks to the LLM to produce a research brief + email draft, and save them into `company_results`. Run it end to end for one real company and read the real output.
-   - [ ] 7.7 Wire the whole pipeline into `POST /batches` as background processing (the HTTP response returns immediately; each company's status flips `pending` → `done` as its research finishes), then commit + push via the feature-branch → PR → merge workflow.
+   - [x] 7.7 Wire the whole pipeline into `POST /batches` as background processing (the HTTP response returns immediately; each company's status flips `pending` → `done` as its research finishes), then commit + push via the feature-branch → PR → merge workflow.
 
 8. **Tests**
    Write tests for the pieces that matter most: API endpoints, the retrieval logic, auth.
