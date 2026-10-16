@@ -11,6 +11,8 @@ export function chunkText(
 
     chunks.push(chunk);
 
+    if (chunkSize + start >= text.length) break;
+
     start += chunkSize - overlap;
   }
   return chunks;
