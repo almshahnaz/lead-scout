@@ -104,10 +104,3 @@ describe("POST /login", () => {
     expect(response.status).toBe(401);
   });
 });
-
-describe("POST /batches", () => {
-  test("returns 401 when attempting to create a batch without logging in", async () => {
-    const response = await request(app).post("/batches");
-    expect(response.status).toBe(401);
-  });
-});

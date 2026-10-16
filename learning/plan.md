@@ -115,6 +115,14 @@ Each section ends in something concretely visible working. No task-level breakdo
    Write tests for the pieces that matter most: API endpoints, the retrieval logic, auth.
    *Deliverable:* a test suite that runs, passes, and catches a deliberately introduced bug.
 
+   - [x] 8.1 Install a test runner (Vitest) in `backend/`, add a `test` script, and write the first passing test for `chunkText` (a pure function — no database, no network).
+   - [x] 8.2 Cover `chunkText`'s edge cases (text shorter than `chunkSize`, overlap actually overlapping, the shorter tail chunk), then deliberately break the function and watch a test fail.
+   - [x] 8.3 Make the Express `app` importable without starting the server (split `app` from `listen`), install Supertest, and test the auth routes: signup validation (`400`/`409`), login, and `requireAuth` returning `401`.
+   - [x] 8.4 Test `/batches`: `POST` input validation, and that a second user gets `404` for the first user's batch (the per-user scoping from Section 6).
+   - [ ] 8.5 Test `retrieveChunks` against real Postgres/pgvector using tiny hand-made vectors (no OpenAI calls), proving the closest vector really comes back first.
+   - [ ] 8.6 Test the pipeline's failure path with the external services (Tavily/OpenAI) faked: when a step throws, the company ends up `failed`, not stuck `pending`.
+   - [ ] 8.7 Introduce a deliberate bug somewhere that matters, confirm the suite catches it, fix it, then commit + push via the feature-branch → PR → merge workflow.
+
 9. **Live deployment**
    Deploy frontend to Vercel, backend + database to Railway. Wire up environment variables/secrets. Confirm the MVP guardrails (batch-size cap, per-user rate limit) are in place.
    *Deliverable:* a real public URL — a stranger (or you, on your phone) can open it, sign up, and run a batch end to end.
