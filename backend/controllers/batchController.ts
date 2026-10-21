@@ -13,7 +13,16 @@ import {
 import { processCompanyResearch } from "../services/pipeline.js";
 
 export async function createBatchHandler(req: Request, res: Response) {
-  const { companyNames } = req.body;
+  const { companyNames } = req.body ?? {};
+  if (
+    !Array.isArray(companyNames) ||
+    !companyNames.every((name) => typeof name === "string")
+  ) {
+    return res
+      .status(400)
+      .json({ error: "companyNames must be an array of strings" });
+  }
+
   const cleanedNames = companyNames
     .filter((name: string) => name.trim() !== "")
     .map((name: string) => name.trim());

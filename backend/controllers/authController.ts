@@ -7,7 +7,7 @@ import {
 } from "../models/userModel.js";
 
 export async function signup(req: Request, res: Response) {
-  const { email, password } = req.body;
+  const { email, password } = req.body ?? {};
 
   if (!email || !password) {
     return res.status(400).json({ error: "Email and password are required" });
@@ -37,7 +37,7 @@ export async function signup(req: Request, res: Response) {
 }
 
 export async function login(req: Request, res: Response) {
-  const { email, password } = req.body;
+  const { email, password } = req.body ?? {};
 
   if (!email || !password) {
     return res.status(400).json({ error: "Email and password are required" });
