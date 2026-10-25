@@ -14,7 +14,11 @@ if (!sessionSecret) {
   throw new Error("SESSION_SECRET is not set in .env");
 }
 
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+if (!process.env.CORS_ORIGIN) {
+  throw new Error("CORS_ORIGIN is not set in .env");
+}
+
+app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true }));
 app.use(express.json());
 app.use(
   session({
