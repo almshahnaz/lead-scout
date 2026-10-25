@@ -1,7 +1,8 @@
 import app from "./app.js";
 import { checkConnection } from "./db/pool.js";
 
-const PORT = 3001;
+const DEFAULT_PORT = "3001";
+const PORT = parseInt(process.env.PORT || DEFAULT_PORT, 10);
 
 checkConnection();
 
