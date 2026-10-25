@@ -121,11 +121,20 @@ Each section ends in something concretely visible working. No task-level breakdo
    - [x] 8.4 Test `/batches`: `POST` input validation, and that a second user gets `404` for the first user's batch (the per-user scoping from Section 6).
    - [x] 8.5 Test `retrieveChunks` against real Postgres/pgvector using tiny hand-made vectors (no OpenAI calls), proving the closest vector really comes back first.
    - [x] 8.6 Test the pipeline's failure path with the external services (Tavily/OpenAI) faked: when a step throws, the company ends up `failed`, not stuck `pending`.
-   - [ ] 8.7 Introduce a deliberate bug somewhere that matters, confirm the suite catches it, fix it, then commit + push via the feature-branch → PR → merge workflow.
+   - [x] 8.7 Introduce a deliberate bug somewhere that matters, confirm the suite catches it, fix it, then commit + push via the feature-branch → PR → merge workflow.
 
 9. **Live deployment**
    Deploy frontend to Vercel, backend + database to Railway. Wire up environment variables/secrets. Confirm the MVP guardrails (batch-size cap, per-user rate limit) are in place.
    *Deliverable:* a real public URL — a stranger (or you, on your phone) can open it, sign up, and run a batch end to end.
+
+   - [x] 9.1 Move the backend's config into environment variables that work locally and in production: `DATABASE_URL`, `SESSION_SECRET`, `TAVILY_API_KEY`, `OPENAI_API_KEY`, and the CORS origin (currently hardcoded to `http://localhost:5173`). Confirm `backend/.env` is still gitignored.
+   - [x] 9.2a Batch-size cap on `POST /batches`: a `MAX_BATCH_SIZE` constant (15) and a `400` when the cleaned list is over it, covered by a test that sends 16 names (suite 25/25). The "guard removed" break test was predicted but deliberately not run, since without the guard the request would call Tavily and OpenAI live.
+   - [x] 9.2b Per-user rate limit on `POST /batches`, covered by a test. Needs a new package, so it gets its own lesson and its own design choices (split from 9.2 on 2026-10-25).
+   - [ ] 9.3 Deploy the backend and Postgres to Railway: create the Postgres service, apply `schema.sql` to it, set the env vars from 9.1, deploy the backend, and confirm `POST /signup` answers on the public URL.
+   - [ ] 9.4 Point the frontend at the deployed backend: make the API base URL an environment variable (currently hardcoded to `http://localhost:3001`). Fix the cross-site session cookie settings (the frontend and backend will be on different domains), and make sure the CORS origin is the deployed frontend's URL.
+   - [ ] 9.5 Deploy the frontend to Vercel from the GitHub repo, with its API base URL set as an environment variable.
+   - [ ] 9.6 End-to-end check on the public URL, from a phone: sign up, run a batch, see real results, then log in with a second account and confirm it sees none of the first account's batches.
+   - [ ] 9.7 Commit + push via the feature-branch → PR → merge workflow.
 
 ## End-of-project goal
 

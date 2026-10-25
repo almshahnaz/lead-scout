@@ -49,6 +49,38 @@ describe("POST /batches", () => {
 
     expect(response.status).toBe(400);
   });
+
+  test("returns 400 when creating a batch with entries greater than the current maximum batch size", async () => {
+    const user = { email: "user@test.com", password: "123" };
+    const agent = request.agent(app);
+    await agent.post("/signup").send(user);
+    await agent.post("/login").send(user);
+
+    const companies = Array(16).fill("Test Company");
+
+    const response = await agent
+      .post("/batches")
+      .send({ companyNames: companies });
+
+    expect(response.status).toBe(400);
+  });
+
+  test("returns 429 when the same user makes too many requests", async () => {
+    const user = { email: "user@test.com", password: "123" };
+    const agent = request.agent(app);
+    await agent.post("/signup").send(user);
+    await agent.post("/login").send(user);
+
+    const first = await agent.post("/batches").send({ companyNames: [] });
+
+    expect(first.status).toBe(400);
+
+    const second = await agent
+      .post("/batches")
+      .send({ companyNames: ["Anthropic", "OpenAI"] });
+
+    expect(second.status).toBe(429);
+  });
 });
 
 describe("GET /batches/:id", () => {

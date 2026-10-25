@@ -12,6 +12,8 @@ import {
 } from "../models/batchModel.js";
 import { processCompanyResearch } from "../services/pipeline.js";
 
+const MAX_BATCH_SIZE = 15;
+
 export async function createBatchHandler(req: Request, res: Response) {
   const { companyNames } = req.body ?? {};
   if (
@@ -31,6 +33,12 @@ export async function createBatchHandler(req: Request, res: Response) {
     return res
       .status(400)
       .json({ error: "Please provide at least one company name" });
+  }
+
+  if (cleanedNames.length > MAX_BATCH_SIZE) {
+    return res
+      .status(400)
+      .json({ error: `Maximum entries cannot exceed ${MAX_BATCH_SIZE}` });
   }
   const batchID = randomUUID();
   const initialStatus = "pending";
