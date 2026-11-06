@@ -1,4 +1,6 @@
-process.loadEnvFile();
+import { loadEnv } from "../config/env.js";
+
+loadEnv();
 
 const BASE_URL = "https://api.tavily.com/search";
 

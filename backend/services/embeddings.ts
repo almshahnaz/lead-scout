@@ -1,6 +1,7 @@
 import OpenAI from "openai";
+import { loadEnv } from "../config/env.js";
 
-process.loadEnvFile();
+loadEnv();
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
