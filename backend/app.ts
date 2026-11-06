@@ -4,10 +4,11 @@ import session from "express-session";
 
 import authRoutes from "./routes/authRoutes.js";
 import batchRoutes from "./routes/batchRoutes.js";
+import { loadEnv } from "./config/env.js";
 
 const app = express();
 
-process.loadEnvFile();
+loadEnv();
 
 const sessionSecret = process.env.SESSION_SECRET;
 if (!sessionSecret) {
