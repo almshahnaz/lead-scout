@@ -7,6 +7,7 @@ import batchRoutes from "./routes/batchRoutes.js";
 import { loadEnv } from "./config/env.js";
 
 const app = express();
+app.set("trust proxy", 1);
 
 loadEnv();
 
@@ -26,6 +27,10 @@ app.use(
     secret: sessionSecret,
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      sameSite: "none",
+      secure: true,
+    },
   }),
 );
 
