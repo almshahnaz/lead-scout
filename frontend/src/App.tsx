@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import BatchInputForm from "./components/BatchInputForm";
 import ResultsTable from "./components/ResultsTable";
@@ -9,6 +9,10 @@ import SignupForm from "./components/SignupForm";
 import * as authApi from "./api/auth";
 import * as batchesApi from "./api/batches";
 
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 function App() {
   const [selectedResult, setSelectedResult] = useState<CompanyResult | null>(
     null,
@@ -16,10 +20,9 @@ function App() {
 
   const [results, setResults] = useState<CompanyResult[]>([]);
 
-  const [loggedIn, setLoggedIn] = useState<{
-    id: string;
-    email: string;
-  } | null>(null);
+  const [loggedIn, setLoggedIn] = useState<boolean>(false);
+
+  const [checkingSession, setCheckingSession] = useState<boolean>(true);
 
   const [showSignup, setShowSignup] = useState<boolean>(false);
 
@@ -44,9 +47,9 @@ function App() {
     setError(null);
 
     try {
-      const result = await authApi.login(email, password);
+      await authApi.login(email, password);
 
-      setLoggedIn(result);
+      setLoggedIn(true);
       setResults([]);
       setSelectedResult(null);
     } catch (error) {
@@ -62,7 +65,7 @@ function App() {
     try {
       await authApi.logout();
 
-      setLoggedIn(null);
+      setLoggedIn(false);
       setResults([]);
       setSelectedResult(null);
     } catch (error) {
@@ -78,12 +81,51 @@ function App() {
 
     try {
       const batch = await batchesApi.createBatch(companyNames);
-      const batchData = await batchesApi.getBatch(batch.id);
 
-      setResults(batchData.results);
+      setResults(batch.results);
+      await pollBatch(batch.id);
     } catch (error) {
       console.error("Error", error);
     }
+  }
+
+  async function pollBatch(batchID: string) {
+    const MAX_ATTEMPTS = 40;
+
+    for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+      await sleep(3000);
+
+      const batch = await batchesApi.getBatch(batchID);
+
+      setResults(batch.results);
+
+      if (batch.status === "done") {
+        return;
+      }
+    }
+  }
+
+  useEffect(() => {
+    async function checkSession() {
+      try {
+        const batches = await batchesApi.listBatches();
+
+        if (batches !== null) {
+          setLoggedIn(true);
+          setResults(batches.flatMap((batch) => batch.results));
+        }
+      } catch (error) {
+        console.error("Error", error);
+      } finally {
+        setCheckingSession(false);
+      }
+    }
+
+    checkSession();
+  }, []);
+
+  if (checkingSession) {
+    return null;
   }
 
   return (

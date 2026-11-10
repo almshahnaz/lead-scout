@@ -6,6 +6,7 @@ import {
   createCompanyResult,
   getCompanyResults,
   getBatchByID,
+  getBatchesByUser,
   type CompanyResult,
   type BatchRun,
   markBatchDone,
@@ -127,6 +128,24 @@ export async function getBatchHandler(
     console.error("Error: ", error);
     res.status(500).json({
       error: "Failed to retrieve batch",
+    });
+  }
+}
+
+export async function listBatchesHandler(req: Request, res: Response) {
+  try {
+    const userID = req.session.userID;
+
+    if (!userID) {
+      return res.status(401).json({ error: "You must be logged in" });
+    }
+
+    const batches = await getBatchesByUser(userID);
+    res.status(200).json(batches);
+  } catch (error) {
+    console.error("Error: ", error);
+    res.status(500).json({
+      error: "Failed to list batches",
     });
   }
 }
