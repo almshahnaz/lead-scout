@@ -91,3 +91,19 @@ export async function getBatchByID(userID: string, id: string) {
   const result = await pool.query(query, [id, userID]);
   return result.rows[0];
 }
+
+export async function getBatchesByUser(userID: string): Promise<BatchRun[]> {
+  const query = "SELECT id, status FROM batch_runs WHERE user_id = $1";
+
+  const result = await pool.query(query, [userID]);
+
+  const batches: BatchRun[] = await Promise.all(
+    result.rows.map(async (row) => ({
+      id: row.id,
+      status: row.status,
+      results: await getCompanyResults(row.id),
+    })),
+  );
+
+  return batches;
+}
