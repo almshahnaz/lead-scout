@@ -10,9 +10,9 @@ export default function CompanyDetail({ result }: CompanyDetailProps) {
       <h2>{result.companyName}</h2>
       <p>Status: {result.status}</p>
 
-      <p>{result.brief}</p>
+      <p>Brief: {result.brief}</p>
 
-      <p>{result.emailDraft}</p>
+      <p>Email Draft: {result.emailDraft}</p>
     </div>
   );
 }
