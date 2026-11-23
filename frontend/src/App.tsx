@@ -43,6 +43,17 @@ function App() {
     }
   }
 
+  async function loadBatches(): Promise<void> {
+    const batches = await batchesApi.listBatches();
+
+    if (batches === null) {
+      return;
+    }
+
+    setLoggedIn(true);
+    setResults(batches.flatMap((batch) => batch.results));
+  }
+
   async function handleLogin(email: string, password: string) {
     setError(null);
 
@@ -52,6 +63,8 @@ function App() {
       setLoggedIn(true);
       setResults([]);
       setSelectedResult(null);
+
+      await loadBatches();
     } catch (error) {
       setError(
         error instanceof Error
@@ -108,12 +121,7 @@ function App() {
   useEffect(() => {
     async function checkSession() {
       try {
-        const batches = await batchesApi.listBatches();
-
-        if (batches !== null) {
-          setLoggedIn(true);
-          setResults(batches.flatMap((batch) => batch.results));
-        }
+        await loadBatches();
       } catch (error) {
         console.error("Error", error);
       } finally {
